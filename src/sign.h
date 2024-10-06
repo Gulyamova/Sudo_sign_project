@@ -36,7 +36,7 @@ public:
 
     void remove_sign(unsigned int id) {
         if (signs.find(id) == signs.end()) {
-            std::cout << "Предупреждение: Знак с ID " << id << " не найден в базе данных." << std::endl;
+            std::cout << "Warning: Sign with ID " << id << " not found in the database." << std::endl;
             return;
         }
         signs.erase(id);
