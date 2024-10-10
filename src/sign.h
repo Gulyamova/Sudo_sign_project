@@ -34,12 +34,13 @@ public:
         signs.emplace(sign.id, Sign(sign.name, sign.id, sign.coordinates));
     }
 
-    void remove_sign(unsigned int id) {
+    bool remove_sign(unsigned int id) {
         if (signs.find(id) == signs.end()) {
-            std::cout << "Предупреждение: Знак с ID " << id << " не найден в базе данных." << std::endl;
-            return;
+            std::cout << "Warning: Sign with ID " << id << " not found in the database." << std::endl;
+            return false;
         }
         signs.erase(id);
+        return true;
     }
 
     Sign find_sign(unsigned int id) const {
@@ -50,10 +51,20 @@ public:
         return it->second;
     }
 
-    void add_multiple_signs(const std::vector<Sign>& sign_list) {
-        for (const auto& sign : sign_list) {
-            add_sign(sign);
+    std::pair<std::vector<Sign>, std::vector<Sign>> add_multiple_signs(const std::vector<Sign>& signs) {
+        std::vector<Sign> successfully_added;
+        std::vector<Sign> failed_to_add;
+
+        for (const auto& sign : signs) {
+            try {
+                add_sign(sign);
+                successfully_added.push_back(sign);
+            } catch (const std::runtime_error& e) {
+                std::cerr << "Failed to add sign with ID " << sign.id << ": " << e.what() << std::endl;
+                failed_to_add.push_back(sign);
+            }
         }
+        return std::make_pair(successfully_added, failed_to_add);
     }
 };
 
