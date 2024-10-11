@@ -14,15 +14,13 @@ class TestSignDatabase(unittest.TestCase):
     def test_add_sign(self):
         sign1 = sign_module.Sign("Stop", 1, sign_module.Coordinates(45.1234, 55.1234))
         self.db.add_sign(sign1)
-        with self.assertRaises(RuntimeError):
-            self.db.add_sign(sign1)
 
     def test_remove_sign(self):
         sign1 = sign_module.Sign("Stop", 1, sign_module.Coordinates(45.1234, 55.1234))
         self.db.add_sign(sign1)
-        self.assertTrue(self.db.remove_sign(1)) 
+        self.assertTrue(self.db.remove_sign(sign1.id)) 
         with self.assertRaises(RuntimeError):
-            self.db.find_sign(1)
+            self.db.find_sign(sign1.id)
 
         result = self.db.remove_sign(999) 
         self.assertFalse(result) 
@@ -37,25 +35,40 @@ class TestSignDatabase(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             self.db.add_sign(sign1) 
 
-    def test_add_multiple_signs(self):
+    def test_add_multiple_signs_with_handling(self):
         signs_to_add = [
-        sign_module.Sign("Stop", 1, sign_module.Coordinates(45.1234, 55.1234)),
-        sign_module.Sign("Yield", 2, sign_module.Coordinates(40.7128, -74.0060)),
-        sign_module.Sign("Speed Limit", 1, sign_module.Coordinates(50.8503, 4.3517)),  # Дубликат
-        sign_module.Sign("No Entry", 3, sign_module.Coordinates(48.8566, 2.3522))]
+            sign_module.Sign("Stop", 1, sign_module.Coordinates(45.1234, 55.1234)),
+            sign_module.Sign("Yield", 2, sign_module.Coordinates(40.7128, -74.0060)),
+            sign_module.Sign("Speed Limit", 1, sign_module.Coordinates(50.8503, 4.3517)),  # Дубликат ID
+            sign_module.Sign("No Entry", 3, sign_module.Coordinates(48.8566, 2.3522))
+        ]
 
-        successfully_added, failed_to_add = self.db.add_multiple_signs(signs_to_add)
+        successfully_added, failed_to_add = self.add_multiple_signs(signs_to_add)
 
         self.assertEqual(len(successfully_added), 3)
         self.assertEqual(len(failed_to_add), 1)
 
-        print("Successfully added signs:")
+        print("\nSuccessfully added signs:")
         for sign in successfully_added:
             print(f"Sign {sign.name} with ID {sign.id}")
 
-        print("Failed to add signs:")
+        print("\nFailed to add signs:")
         for sign in failed_to_add:
             print(f"Sign {sign.name} with ID {sign.id}")
+
+    def add_multiple_signs(self, signs_to_add):
+        successfully_added = []
+        failed_to_add = []
+
+        for sign in signs_to_add:
+            try:
+                self.db.add_sign(sign)
+                successfully_added.append(sign)
+            except RuntimeError as e:
+                print(f"Failed to add sign with ID {sign.id}: {e}")
+                failed_to_add.append(sign)
+
+        return successfully_added, failed_to_add
 
 if __name__ == '__main__':
     unittest.main()

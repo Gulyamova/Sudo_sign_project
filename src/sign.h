@@ -50,22 +50,6 @@ public:
         }
         return it->second;
     }
-
-    std::pair<std::vector<Sign>, std::vector<Sign>> add_multiple_signs(const std::vector<Sign>& signs) {
-        std::vector<Sign> successfully_added;
-        std::vector<Sign> failed_to_add;
-
-        for (const auto& sign : signs) {
-            try {
-                add_sign(sign);
-                successfully_added.push_back(sign);
-            } catch (const std::runtime_error& e) {
-                std::cerr << "Failed to add sign with ID " << sign.id << ": " << e.what() << std::endl;
-                failed_to_add.push_back(sign);
-            }
-        }
-        return std::make_pair(successfully_added, failed_to_add);
-    }
 };
 
 #endif 

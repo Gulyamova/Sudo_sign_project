@@ -20,6 +20,5 @@ PYBIND11_MODULE(sign_module, m) {
         .def(py::init<>()) 
         .def("add_sign", &SignDatabase::add_sign) 
         .def("remove_sign", &SignDatabase::remove_sign)
-        .def("find_sign", &SignDatabase::find_sign) 
-        .def("add_multiple_signs", &SignDatabase::add_multiple_signs); 
+        .def("find_sign", &SignDatabase::find_sign);
 }
